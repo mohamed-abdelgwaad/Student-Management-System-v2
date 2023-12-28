@@ -1,0 +1,107 @@
+<beans xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="com.momen.studentSystem"/>
+
+
+    <tx:annotation-driven/>
+    <mvc:annotation-driven/>
+
+
+    <!-- View Resolver -->
+    <bean
+            class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+
+    <bean id="studentService" class="com.momen.studentSystem.service.impl.StudentServiceImpl"/>
+
+    <bean id="studentController" class="com.momen.studentSystem.controller.StudentController">
+        <property name="studentService" ref="studentService"/>
+    </bean>
+
+
+    <bean id="teacherService" class="com.momen.studentSystem.service.impl.TeacherServiceImpl"/>
+
+    <bean id="teacherController" class="com.momen.studentSystem.controller.TeacherController">
+        <property name="teacherService" ref="teacherService"/>
+    </bean>
+
+    <bean id="quizService" class="com.momen.studentSystem.service.impl.QuizServiceImpl"/>
+
+    <bean id="quizController" class="com.momen.studentSystem.controller.QuizController">
+        <property name="quizService" ref="quizService"/>
+    </bean>
+
+    <bean id="courseService" class="com.momen.studentSystem.service.impl.CourseServiceImpl"/>
+
+    <bean id="courseController" class="com.momen.studentSystem.controller.CourseController">
+        <property name="courseService" ref="courseService"/>
+    </bean>
+
+
+    <!-- data source -->
+
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
+
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/anyware_company"/>
+        <property name="username" value="student"/>
+        <property name="password" value="student"/>
+
+    </bean>
+
+
+    <bean
+            class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"
+            name="factory">
+
+        <!-- data source -->
+        <property name="dataSource" ref="ds"/>
+
+        <!-- hibernate properties -->
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+
+        <!-- annotated classes -->
+        <property name="annotatedClasses">
+            <list>
+                <value>com.momen.studentSystem.model.Course</value>
+                <value>com.momen.studentSystem.model.Quiz</value>
+                <value>com.momen.studentSystem.model.Student</value>
+                <value>com.momen.studentSystem.model.Teacher</value>
+            </list>
+        </property>
+
+    </bean>
+
+    <bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+          name="hibernateTemplate">
+        <property name="sessionFactory" ref="factory"/>
+
+    </bean>
+
+    <bean
+            class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+            name="transactionManager">
+        <property name="sessionFactory" ref="factory"/>
+    </bean>
+
+
+    <mvc:resources location="classpath:/META-INF/resources/" mapping="swagger-ui.html"/>
+    <mvc:resources location="classpath:/META-INF/resources/webjars/" mapping="/webjars/**"/>
+
+
+</beans>
