@@ -1,4 +1,13 @@
-package com.sms.studentSystem.service.impl;
+ package com.sms.studentSystem.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sms.studentSystem.dto.GenericResponse;
 import com.sms.studentSystem.dto.QuizDto;
@@ -9,14 +18,6 @@ import com.sms.studentSystem.util.ModelMapperUtil;
 import com.sms.studentSystem.util.enums.ErrorMessage;
 import com.sms.studentSystem.util.enums.ResponseMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class QuizServiceImpl implements QuizService {
 
@@ -25,31 +26,37 @@ public class QuizServiceImpl implements QuizService {
 
 
     @Override
-    public GenericResponse<?> getAllQuizzes() {
+    public GenericResponse<QuizDto> getAllQuizzes() {
         try {
             List<Quiz> quizzes = this.hibernateTemplate.loadAll(Quiz.class);
-            return GenericResponse.builder()
-                    .data(quizzes.stream().map(quiz -> ModelMapperUtil.MAPPER().map(quiz, QuizDto.class)).collect(Collectors.toList()))
+            
+            List<QuizDto> QuizDtos = quizzes.stream().map(quiz -> ModelMapperUtil.MAPPER().map(quiz, QuizDto.class)).collect(Collectors.toList());
+            GenericResponse<QuizDto> response= new   GenericResponse.Builder<QuizDto>()
+                    .data(QuizDtos)
                     .responseMessage(ResponseMessage.SUCCESS)
                     .responseCode(ResponseMessage.SUCCESS.getCode())
                     .build();
+            return response;
         } catch (Exception e) {
             return handleException(e);
         }
     }
 
     @Override
-    public GenericResponse<?> getQuizById(Long id) {
+    public GenericResponse<QuizDto> getQuizById(Long id) {
         try {
             Quiz quiz = this.hibernateTemplate.get(Quiz.class, id);
             if (quiz == null)
                 throw new NotFoundException("No Quizzes Found with this ID");
-            return GenericResponse.builder()
-                    .data(ModelMapperUtil.MAPPER().map(quiz, QuizDto.class))
+            List<QuizDto> quizDtos =  new ArrayList<QuizDto>();
+            QuizDto quizDto=ModelMapperUtil.MAPPER().map(quiz, QuizDto.class);
+            quizDtos.add(quizDto);
+            GenericResponse<QuizDto> response= new GenericResponse.Builder<QuizDto>()
+                    .data(quizDtos)
                     .responseMessage(ResponseMessage.SUCCESS)
                     .responseCode(ResponseMessage.SUCCESS.getCode())
                     .build();
-
+            return response;
         } catch (Exception e) {
             return handleException(e);
         }
@@ -57,15 +64,18 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional
-    public GenericResponse<?> addQuiz(QuizDto quizDto) {
+    public GenericResponse<Quiz> addQuiz(QuizDto quizDto) {
         try {
             Quiz quiz = ModelMapperUtil.MAPPER().map(quizDto, Quiz.class);
+            List<Quiz> quizs =  new ArrayList<Quiz>();
+            quizs.add(quiz);
             this.hibernateTemplate.save(quiz);
-            return GenericResponse.builder()
-                    .data(quiz)
+            GenericResponse<Quiz> response= new GenericResponse.Builder<Quiz>()
+                    .data(quizs)
                     .responseMessage(ResponseMessage.SUCCESS)
                     .responseCode(ResponseMessage.SUCCESS.getCode())
                     .build();
+            return response;
         } catch (Exception e) {
             return handleException(e);
         }
@@ -73,15 +83,18 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional
-    public GenericResponse<?> updateQuiz(QuizDto quizDto) {
+    public GenericResponse<Quiz> updateQuiz(QuizDto quizDto) {
         try {
             Quiz quiz = ModelMapperUtil.MAPPER().map(quizDto, Quiz.class);
             this.hibernateTemplate.update(quiz);
-            return GenericResponse.builder()
-                    .data(quiz)
+            List<Quiz> quizs =  new ArrayList<Quiz>();
+            quizs.add(quiz);
+            GenericResponse<Quiz> response= new GenericResponse.Builder<Quiz>()
+                    .data(quizs)
                     .responseMessage(ResponseMessage.SUCCESS)
                     .responseCode(ResponseMessage.SUCCESS.getCode())
                     .build();
+            return response;
         } catch (Exception e) {
             return handleException(e);
         }
@@ -89,18 +102,19 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional
-    public GenericResponse<?> deleteQuiz(Long id) {
+    public GenericResponse<Quiz> deleteQuiz(Long id) {
         try {
             Quiz quiz = this.hibernateTemplate.get(Quiz.class, id);
             if (quiz == null)
                 throw new NotFoundException("No Quizzes Found with this ID");
             else {
                 this.hibernateTemplate.delete(quiz);
-                return GenericResponse.builder()
+                GenericResponse<Quiz> response= new GenericResponse.Builder<Quiz>()
                         .data(null)
                         .responseMessage(ResponseMessage.SUCCESS)
                         .responseCode(ResponseMessage.SUCCESS.getCode())
                         .build();
+                return response;
             }
 
         } catch (Exception e) {
@@ -109,11 +123,12 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private <T> GenericResponse<T> handleException(Exception e) {
-        return GenericResponse.<T>builder()
+    	GenericResponse<T> response= new GenericResponse.Builder<T>()
                 .data(null)
                 .responseMessage(ResponseMessage.FAIL)
                 .responseCode(ResponseMessage.FAIL.getCode())
                 .errorMessage(ErrorMessage.INVALID_CREDENTIALS.getMessage())
                 .build();
+    	return response;
     }
 }
