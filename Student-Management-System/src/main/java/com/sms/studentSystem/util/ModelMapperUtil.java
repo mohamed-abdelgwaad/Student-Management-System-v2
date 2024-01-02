@@ -2,11 +2,7 @@ package com.sms.studentSystem.util;
 
 import org.modelmapper.ModelMapper;
 
-/**
- * @author Mo'men Magdy
- * this is a singleton class allowing only a single instance of ModelMapper
- * to be created and accessed
- */
+
 public class ModelMapperUtil {
 
     /**

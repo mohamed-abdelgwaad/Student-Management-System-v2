@@ -6,7 +6,7 @@
 	    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
 	    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:component-scan base-package="com.momen.studentSystem"/>
+    <context:component-scan base-package="com.sms.studentSystem"/>
 
 
     <tx:annotation-driven/>
@@ -21,28 +21,28 @@
     </bean>
 
 
-    <bean id="studentService" class="com.momen.studentSystem.service.impl.StudentServiceImpl"/>
+    <bean id="studentService" class="com.sms.studentSystem.service.impl.StudentServiceImpl"/>
 
-    <bean id="studentController" class="com.momen.studentSystem.controller.StudentController">
+    <bean id="studentController" class="com.sms.studentSystem.controller.StudentController">
         <property name="studentService" ref="studentService"/>
     </bean>
 
 
-    <bean id="teacherService" class="com.momen.studentSystem.service.impl.TeacherServiceImpl"/>
+    <bean id="teacherService" class="com.sms.studentSystem.service.impl.TeacherServiceImpl"/>
 
-    <bean id="teacherController" class="com.momen.studentSystem.controller.TeacherController">
+    <bean id="teacherController" class="com.sms.studentSystem.controller.TeacherController">
         <property name="teacherService" ref="teacherService"/>
     </bean>
 
-    <bean id="quizService" class="com.momen.studentSystem.service.impl.QuizServiceImpl"/>
+    <bean id="quizService" class="com.sms.studentSystem.service.impl.QuizServiceImpl"/>
 
-    <bean id="quizController" class="com.momen.studentSystem.controller.QuizController">
+    <bean id="quizController" class="com.sms.studentSystem.controller.QuizController">
         <property name="quizService" ref="quizService"/>
     </bean>
 
-    <bean id="courseService" class="com.momen.studentSystem.service.impl.CourseServiceImpl"/>
+    <bean id="courseService" class="com.sms.studentSystem.service.impl.CourseServiceImpl"/>
 
-    <bean id="courseController" class="com.momen.studentSystem.controller.CourseController">
+    <bean id="courseController" class="com.sms.studentSystem.controller.CourseController">
         <property name="courseService" ref="courseService"/>
     </bean>
 
@@ -52,9 +52,9 @@
     <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
 
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/anyware_company"/>
-        <property name="username" value="student"/>
-        <property name="password" value="student"/>
+        <property name="url" value=" jdbc:mysql://localhost:3306/spring_db?useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
 
     </bean>
 
@@ -78,10 +78,10 @@
         <!-- annotated classes -->
         <property name="annotatedClasses">
             <list>
-                <value>com.momen.studentSystem.model.Course</value>
-                <value>com.momen.studentSystem.model.Quiz</value>
-                <value>com.momen.studentSystem.model.Student</value>
-                <value>com.momen.studentSystem.model.Teacher</value>
+                <value>com.sms.studentSystem.model.Course</value>
+                <value>com.sms.studentSystem.model.Quiz</value>
+                <value>com.sms.studentSystem.model.Student</value>
+                <value>com.sms.studentSystem.model.Teacher</value>
             </list>
         </property>
 
